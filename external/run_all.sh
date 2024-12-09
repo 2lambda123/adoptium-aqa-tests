@@ -84,15 +84,15 @@ function runExternalTest() {
   if [ -e "${fileName}-PASSED" ] || [ -e "${fileName}-FAILED" ] || [ -e "${fileName}-ERROR" ] ;  then
     if [ "${SKIP_FINISHED}" == "true" ] ; then
       echo "${fileName}-PASSED/FAILED/ERROR exists and SKIP_FINISHED is ${SKIP_FINISHED}, skipping "
-     return
+     return 0
    fi
   fi
   rm -f "${fileName}"
   echo "cat ${fileName}* for details"
   set -x
-    export TEST_JDK_HOME="${jdk}"
+    export TEST_JDK_HOME="${jdk}" ;
     export EXTRA_DOCKER_ARGS="-v $TEST_JDK_HOME:/opt/java/openjdk" ;
-    export BUILD_LIST=external/${externalTest} ; 
+    export BUILD_LIST=external/${externalTest} ;
     if [ "${image}" == "DEFAULT" ] ; then
       unset EXTERNAL_AQA_IMAGE;
     else
@@ -105,9 +105,17 @@ function runExternalTest() {
     fi
     SKIP_GET=true
     cd TKG
+echo " 
+export TEST_JDK_HOME="${TEST_JDK_HOME}"
+export EXTRA_DOCKER_ARGS="${EXTRA_DOCKER_ARGS}" ;
+export BUILD_LIST=${BUILD_LIST} ;
+export EXTERNAL_AQA_IMAGE="${EXTERNAL_AQA_IMAGE:-}";
+make compile
+make "_${testCase}"
+" > "${fileName}"
     set -x
       local cresult=0
-      make compile > "${fileName}" 2>&1 || cresult=$?
+      make compile >> "${fileName}" 2>&1 || cresult=$?
       local rresult=0
       make "_${testCase}" >> "${fileName}" 2>&1 || rresult=$?
     set +x
