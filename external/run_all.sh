@@ -141,9 +141,9 @@ function setupResultsDir() {
       exit 1
     else
       echo "Already run tests in ${RESULTS_DIR} will be skipped:"
-      find  "${RESULTS_DIR}" -type f | sort | grep -e "-\(PASSED\|ERROR\|FAILED\)"
+      find  "${RESULTS_DIR}" -type f | sort | grep -e "-\(PASSED\|ERROR\|FAILED\)" || echo "none found"
       echo "Non finished runs in ${RESULTS_DIR} will be rerun:"
-      find  "${RESULTS_DIR}" -type f | sort | grep -ve "-\(PASSED\|ERROR\|FAILED\)"
+      find  "${RESULTS_DIR}" -type f | sort | grep -ve "-\(PASSED\|ERROR\|FAILED\)" || echo "none found"
     fi
   else
     rm -rf "${RESULTS_DIR}"
